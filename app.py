@@ -1,6 +1,11 @@
 # app.py
 import streamlit as st
 from assistant_logic import get_customer, generate_summary, generate_business_review_agenda, suggest_next_steps
+# app.py (agrega al inicio)
+if "step" not in st.session_state:
+    st.session_state.step = "start"
+if "selected_client" not in st.session_state:
+    st.session_state.selected_client = None
 
 st.set_page_config(page_title="AI Success Companion", page_icon="🤖")
 st.title("🤖 Asistente Virtual de Éxito del Cliente")
