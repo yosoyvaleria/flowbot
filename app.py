@@ -1,57 +1,52 @@
 # app.py
 import streamlit as st
-from assistant_logic import get_customer, generate_summary, generate_business_review_agenda, suggest_next_steps
-# app.py (agrega al inicio)
+from assistant_logic import (
+    get_customer,
+    generate_summary,
+    generate_business_review_agenda,
+    suggest_next_steps,
+)
+
+st.set_page_config(page_title="AI Success Companion", page_icon="🤖")
+st.title("🤖 Asistente Virtual de Éxito del Cliente")
+
+# Inicializar variables de sesión
 if "step" not in st.session_state:
     st.session_state.step = "start"
 if "selected_client" not in st.session_state:
     st.session_state.selected_client = None
 
-st.set_page_config(page_title="AI Success Companion", page_icon="🤖")
-st.title("🤖 Asistente Virtual de Éxito del Cliente")
+st.subheader("🧠 Chat guiado")
 
-# Input: selector de cliente
-st.sidebar.title("Selecciona un cliente")
-client_keys = {
-    "ACME Corp": "acme_corp",
-    "Beta Inc": "beta_inc",
-    "Nova LLC": "nova_llc"
-}
-selected_name = st.sidebar.selectbox("Cliente", list(client_keys.keys()))
-client_key = client_keys[selected_name]
-customer = get_customer(client_key)
+# Paso 1: Selección de cliente
+if st.session_state.step == "start":
+    st.chat_message("assistant").markdown("¡Hola! ¿Sobre qué cliente deseas hablar?")
+    col1, col2, col3 = st.columns(3)
+    if col1.button("ACME Corp"):
+        st.session_state.selected_client = "acme_corp"
+        st.session_state.step = "ask_topic"
+    if col2.button("Beta Inc"):
+        st.session_state.selected_client = "beta_inc"
+        st.session_state.step = "ask_topic"
+    if col3.button("Nova LLC"):
+        st.session_state.selected_client = "nova_llc"
+        st.session_state.step = "ask_topic"
 
-if customer:
-    st.subheader("📌 Resumen de la cuenta")
-    st.text(generate_summary(customer))
+# Paso 2: Qué quieres saber
+elif st.session_state.step == "ask_topic":
+    customer = get_customer(st.session_state.selected_client)
+    st.chat_message("assistant").markdown(f"¿Qué deseas saber de **{customer['name']}**?")
+    col1, col2, col3 = st.columns(3)
+    if col1.button("Estado de cuenta"):
+        st.chat_message("assistant").markdown(generate_summary(customer))
+    if col2.button("Agenda para Business Review"):
+        st.chat_message("assistant").markdown(generate_business_review_agenda(customer))
+    if col3.button("Siguientes pasos"):
+        st.chat_message("assistant").markdown(suggest_next_steps(customer["maturity"]))
 
-    st.subheader("📝 Agenda de Business Review")
-    st.text(generate_business_review_agenda(customer))
+    st.markdown("🔁 ¿Quieres volver a empezar?")
+    if st.button("Elegir otro cliente"):
+        st.session_state.step = "start"
+        st.session_state.selected_client = None
 
-    st.subheader("🚀 Recomendación de próximos pasos")
-    st.success(suggest_next_steps(customer["maturity"]))
-else:
-    st.error("Cliente no encontrado.")
-
-import streamlit as st
-from assistant_logic import process_user_message
-
-st.subheader("💬 Chat con tu AI Success Companion")
-
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-# Input de usuario
-user_input = st.chat_input("Escribe aquí tu pregunta...")
-if user_input:
-    response = process_user_message(user_input)
-    st.session_state.history.append(("usuario", user_input))
-    st.session_state.history.append(("bot", response))
-
-# Mostrar el historial
-for sender, msg in st.session_state.history:
-    if sender == "usuario":
-        st.chat_message("user").markdown(msg)
-    else:
-        st.chat_message("assistant").markdown(msg)
 
