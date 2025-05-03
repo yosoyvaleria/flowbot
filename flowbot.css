@@ -1,0 +1,5 @@
+ai_success_companion/
+│
+├── app.py                ← App principal en Streamlit
+├── database.py           ← Mock de datos de clientes
+└── assistant_logic.py    ← Lógica de negocio del asistente
