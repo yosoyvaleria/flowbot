@@ -27,3 +27,26 @@ if customer:
     st.success(suggest_next_steps(customer["maturity"]))
 else:
     st.error("Cliente no encontrado.")
+
+import streamlit as st
+from assistant_logic import process_user_message
+
+st.subheader("💬 Chat con tu AI Success Companion")
+
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+# Input de usuario
+user_input = st.chat_input("Escribe aquí tu pregunta...")
+if user_input:
+    response = process_user_message(user_input)
+    st.session_state.history.append(("usuario", user_input))
+    st.session_state.history.append(("bot", response))
+
+# Mostrar el historial
+for sender, msg in st.session_state.history:
+    if sender == "usuario":
+        st.chat_message("user").markdown(msg)
+    else:
+        st.chat_message("assistant").markdown(msg)
+
