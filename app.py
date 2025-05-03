@@ -9,7 +9,7 @@ from assistant_logic import (
 )
 
 st.set_page_config(page_title="AI Success Companion", page_icon="🤖")
-st.title("🤖 Asistente Virtual de Éxito del Cliente")
+st.title("🤖 Flowbot IA")
 
 tab1, tab2 = st.tabs(["🧠 Modo Guiado", "💬 Modo Chat Libre"])
 
